@@ -85,7 +85,6 @@
   <!-- Header Bar -->
   <header class="w-full max-w-4xl mb-4 flex flex-col sm:flex-row justify-between items-center gap-3 bg-espresso p-4 rounded-2xl border border-espresso/40 shadow-2xl">
     <div class="flex items-center gap-3">
-      <!-- Aesthetic Custom Letter C Logo -->
       <div class="w-10 h-10 bg-cinnamon text-cream rounded-xl flex items-center justify-center font-heading font-black text-2xl shadow-md border border-cream/20 shrink-0">
         C
       </div>
@@ -113,7 +112,7 @@
         <div class="w-12 h-1 bg-cream/20 rounded-full"></div>
       </div>
 
-      <!-- iOS Status Bar (HH:MM without seconds) -->
+      <!-- iOS Status Bar (HH:MM) -->
       <div class="pt-5 px-6 pb-2 flex justify-between items-center text-xs font-extrabold text-espresso z-30 tracking-tight">
         <span id="liveClock" class="font-mono text-[13px] text-espresso">15:01</span>
         <div class="flex items-center gap-1.5">
@@ -128,12 +127,12 @@
         <!-- Rendered via JavaScript -->
       </div>
 
-      <!-- Bottom Floating Rounded Navigation Bar -->
+      <!-- Bottom Floating Rounded Navigation Bar (Rounded rounded-[18px] icons) -->
       <nav class="absolute bottom-3 inset-x-3 bg-espresso/95 backdrop-blur-lg px-4 py-2.5 rounded-3xl flex justify-around items-center z-30 border border-cinnamon/30 shadow-[0_10px_25px_rgba(0,0,0,0.6)]">
         
         <!-- LEFT: Promo (🎁) -->
         <button onclick="setActiveTab('promo')" class="flex flex-col items-center group focus:outline-none">
-          <div id="navHexPromo" class="w-11 h-11 nav-icon-box flex items-center justify-center text-white text-base shadow-lg">
+          <div id="navHexPromo" class="w-11 h-11 nav-icon-box rounded-[18px] flex items-center justify-center text-white text-base shadow-lg">
             <i class="fa-solid fa-gift"></i>
           </div>
           <span id="navTextPromo" class="text-[10px] font-bold mt-1">Промо</span>
@@ -141,7 +140,7 @@
 
         <!-- CENTER: Home (🏠) -->
         <button onclick="setActiveTab('home')" class="flex flex-col items-center group focus:outline-none">
-          <div id="navHexHome" class="w-11 h-11 nav-icon-box flex items-center justify-center text-white text-base shadow-lg">
+          <div id="navHexHome" class="w-11 h-11 nav-icon-box rounded-[18px] flex items-center justify-center text-white text-base shadow-lg">
             <i class="fa-solid fa-house"></i>
           </div>
           <span id="navTextHome" class="text-[10px] font-bold mt-1">Головна</span>
@@ -149,7 +148,7 @@
 
         <!-- RIGHT: Card (💳) -->
         <button onclick="setActiveTab('card')" class="flex flex-col items-center group focus:outline-none">
-          <div id="navHexCard" class="w-11 h-11 nav-icon-box flex items-center justify-center text-white text-base shadow-lg">
+          <div id="navHexCard" class="w-11 h-11 nav-icon-box rounded-[18px] flex items-center justify-center text-white text-base shadow-lg">
             <i class="fa-solid fa-credit-card"></i>
           </div>
           <span id="navTextCard" class="text-[10px] font-bold mt-1">Картка</span>
@@ -161,13 +160,13 @@
 
   <!-- MODALS -->
 
-  <!-- 1. Wheel of Fortune Modal -->
+  <!-- 1. Wheel of Fortune Modal (No points reward, only partner offers) -->
   <div id="wheelModal" class="hidden fixed inset-0 bg-black/80 backdrop-blur-sm z-50 flex items-center justify-center p-4">
     <div class="bg-cream border-2 border-cinnamon w-full max-w-sm rounded-3xl p-5 text-center shadow-2xl relative">
       <button onclick="closeModal('wheelModal')" class="absolute top-4 right-4 w-8 h-8 rounded-full bg-latte text-espresso font-bold flex items-center justify-center hover:bg-cinnamon hover:text-white transition">✕</button>
 
       <h3 class="text-lg font-extrabold font-heading text-espresso mb-0.5">Колесо Фортуни Crispee</h3>
-      <p class="text-xs text-espresso/70 mb-3">Вигравайте знижки та пропозиції від партнерів!</p>
+      <p class="text-xs text-espresso/70 mb-3">Вигравайте знижки та вигідні пропозиції від партнерів!</p>
 
       <div class="relative w-48 h-48 mx-auto my-2">
         <div class="absolute -top-2 left-1/2 -translate-x-1/2 w-0 h-0 border-l-8 border-l-transparent border-r-8 border-r-transparent border-t-[14px] border-t-cinnamon z-20 pointer-anim"></div>
@@ -279,7 +278,7 @@
     </div>
   </div>
 
-  <!-- 5. Split Bill Modal (Friends Selection Only) -->
+  <!-- 5. Split Bill Modal (Sofiya & Maksym) -->
   <div id="splitModal" class="hidden fixed inset-0 bg-black/80 backdrop-blur-sm z-50 flex items-center justify-center p-4">
     <div class="bg-cream border-2 border-borderCream w-full max-w-sm rounded-3xl p-6 shadow-2xl relative">
       <button onclick="closeModal('splitModal')" class="absolute top-4 right-4 w-8 h-8 rounded-full bg-latte text-espresso font-bold flex items-center justify-center hover:bg-cinnamon hover:text-white transition">✕</button>
@@ -326,7 +325,7 @@
     </div>
   </div>
 
-  <!-- 6. Take Away Modal (Full Day Operating Hours) -->
+  <!-- 6. Take Away Modal (Full Day operating hours without class references) -->
   <div id="takeawayModal" class="hidden fixed inset-0 bg-black/80 backdrop-blur-sm z-50 flex items-center justify-center p-4">
     <div class="bg-cream border-2 border-cinnamon w-full max-w-sm rounded-3xl p-6 shadow-2xl relative max-h-[90vh] overflow-y-auto custom-scroll">
       <button onclick="closeModal('takeawayModal')" class="absolute top-4 right-4 w-8 h-8 rounded-full bg-latte text-espresso font-bold flex items-center justify-center hover:bg-cinnamon hover:text-white transition">✕</button>
@@ -579,10 +578,10 @@
         const txt = document.getElementById(`navText${capitalize(t)}`);
         if (!hex || !txt) return;
         if (t === activeTab) {
-          hex.className = 'w-11 h-11 nav-icon-box bg-cinnamon nav-icon-active flex items-center justify-center text-white text-base shadow-lg';
+          hex.className = 'w-11 h-11 nav-icon-box rounded-[18px] bg-cinnamon nav-icon-active flex items-center justify-center text-white text-base shadow-lg';
           txt.className = 'text-[10px] font-bold mt-1 text-cinnamon';
         } else {
-          hex.className = 'w-11 h-11 nav-icon-box bg-espressoDark hover:bg-cinnamon/50 flex items-center justify-center text-white text-base shadow-lg';
+          hex.className = 'w-11 h-11 nav-icon-box rounded-[18px] bg-espressoDark hover:bg-cinnamon/50 flex items-center justify-center text-white text-base shadow-lg';
           txt.className = 'text-[10px] font-bold mt-1 text-cream/60';
         }
       });
@@ -592,7 +591,7 @@
       return s.charAt(0).toUpperCase() + s.slice(1);
     }
 
-    // PAGE 1: PROMO (🎁) - PINNED REFERRAL, ACHIEVEMENTS & WHEEL
+    // PAGE 1: PROMO (🎁)
     function renderPromoTab() {
       return `
         <div class="space-y-3 pt-1">
@@ -632,7 +631,6 @@
               </span>
             </div>
 
-            <!-- XP Progress Bar -->
             <div class="w-full h-2 bg-latte rounded-full overflow-hidden mb-3.5 border border-borderCream/60">
               <div class="h-full bg-cinnamon rounded-full transition-all duration-500" style="width: 75%;"></div>
             </div>
@@ -691,7 +689,7 @@
               </div>
               <div>
                 <h3 class="text-xs font-extrabold font-heading text-cream">Колесо Фортуни Crispee</h3>
-                <p class="text-[10px] text-cream/70">Вигравайте знижки та вигідні пропозиції щодня!</p>
+                <p class="text-[10px] text-cream/70">Вигравайте знижки та пропозиції від партнерів!</p>
               </div>
             </div>
             <button onclick="openModal('wheelModal')" class="w-full py-2 bg-cinnamon hover:bg-cinnamonHover text-white font-bold text-xs rounded-xl shadow transition flex items-center justify-center gap-1.5">
@@ -714,7 +712,7 @@
       `;
     }
 
-    // Live Search Handling (Updates only feed container without losing focus)
+    // Live Search Handling (Does not lose focus)
     function handleSearch(val) {
       searchQuery = val;
       updateCafeFeed();
@@ -761,7 +759,6 @@
       container.innerHTML = renderCafeListHtml(filteredCafes);
     }
 
-    // Cafe Cards Render (Single Clean TakeAway Icon Button ONLY)
     function renderCafeListHtml(filteredCafes) {
       if (filteredCafes.length > 0) {
         return filteredCafes.map(cafe => `
@@ -780,7 +777,6 @@
               <h3 class="font-extrabold text-xs text-espresso font-heading">${cafe.name}</h3>
               <p class="text-[10px] text-espresso/60 mt-0.5 font-medium">${cafe.address}</p>
 
-              <!-- STREAMLINED VIBE CHECK HIGHLIGHTS -->
               <div class="mt-2 flex flex-wrap gap-1">
                 ${cafe.vibeChips.map(vc => `
                   <span class="text-[9px] bg-latte text-espresso font-semibold px-2 py-0.5 rounded-md border border-borderCream/80 flex items-center gap-1">
@@ -792,7 +788,7 @@
               <div class="mt-3 pt-2.5 border-t border-latte flex items-center justify-between gap-2">
                 <span class="text-[10px] font-bold text-cinnamon truncate">${cafe.discount}</span>
                 
-                <!-- SINGLE CLEAN TakeAway BUTTON WITH ONE ICON -->
+                <!-- Clean single-icon Take Away button -->
                 <button onclick="openTakeawayModal(${cafe.id})" title="Забирай без черги" class="px-3 py-1.5 bg-espresso hover:bg-espressoDark text-cream text-[10px] font-bold rounded-xl shadow-sm flex items-center gap-1.5 shrink-0 transition">
                   <i class="fa-solid fa-clock-rotate-left text-[9px]"></i> Take Away
                 </button>
@@ -835,7 +831,7 @@
 
       return `
         <div class="space-y-3 pt-1">
-          <!-- Location Header & Action Buttons -->
+          <!-- Location Header & Action Buttons (Map button has icon only) -->
           <div class="flex justify-between items-center">
             <div class="flex items-center gap-2">
               <div class="w-8 h-8 rounded-xl bg-cinnamon text-cream font-heading font-black text-lg flex items-center justify-center shadow-sm">
@@ -845,7 +841,7 @@
                 <h2 class="text-base font-extrabold font-heading text-espresso leading-tight">Куди б піти</h2>
                 <div class="flex items-center gap-1 text-[10px] text-espresso/70 font-semibold">
                   <i class="fa-solid fa-location-dot text-cinnamon"></i>
-                  <span>ДТЕУ Кампус, Київ</span>
+                  <span>ДТЕУ, Київ</span>
                 </div>
               </div>
             </div>
@@ -869,9 +865,9 @@
                 <i class="fa-solid fa-xmark"></i>
               </button>
             </div>
-            <button onclick="showToast('Мапа кампусу', 'Завантаження мапи кав\'ярень навколо ДТЕУ')" class="px-3 py-2 bg-latte border border-borderCream text-espresso font-bold text-xs rounded-xl flex items-center gap-1 shrink-0">
-              <i class="fa-solid fa-map-location-dot text-cinnamon"></i>
-              <span>Мапа</span>
+            <!-- Map button with icon only -->
+            <button onclick="showToast('Мапа кампусу', 'Завантаження мапи кав\'ярень навколо ДТЕУ')" class="w-10 h-10 bg-latte border border-borderCream text-espresso font-bold text-xs rounded-xl flex items-center justify-center shrink-0 hover:bg-cinnamon hover:text-white transition">
+              <i class="fa-solid fa-map-location-dot text-cinnamon hover:text-white text-base"></i>
             </button>
           </div>
 
@@ -898,7 +894,7 @@
       `;
     }
 
-    // PAGE 3: CARD (💳) - CRISPEE CARD WITHOUT EXPIRATION & YELLOW CHIP
+    // PAGE 3: CARD (💳) - Crispee card without yellow chip & expiration
     function renderCardTab() {
       const activeOrdersHtml = activeOrders.map(o => `
         <div class="bg-emerald-50 p-2.5 rounded-xl border border-emerald-300 flex justify-between items-center shadow-sm">
@@ -922,7 +918,7 @@
             </span>
           </div>
 
-          <!-- VIRTUAL CARD (Crispee branding, no yellow chip, no exp date) -->
+          <!-- VIRTUAL CARD (Crispee branding, no yellow chip, no expiration) -->
           <div class="w-full h-44 rounded-2xl bg-gradient-to-tr from-espresso via-espressoDark to-cinnamon p-4 text-white shadow-xl border border-cinnamon/40 flex flex-col justify-between relative overflow-hidden">
             <div class="absolute -right-8 -bottom-8 w-36 h-36 rounded-full border-4 border-cinnamon/20"></div>
 
