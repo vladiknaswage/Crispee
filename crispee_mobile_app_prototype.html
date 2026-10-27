@@ -1,0 +1,1233 @@
+<!DOCTYPE html>
+<html lang="uk">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Crispee Mobile App Prototype</title>
+  <!-- Tailwind CSS -->
+  <script src="https://cdn.tailwindcss.com"></script>
+  <!-- Font Awesome Icons -->
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+  <!-- Google Fonts -->
+  <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Montserrat:wght@600;700;800;900&family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap">
+
+  <script>
+    tailwind.config = {
+      theme: {
+        extend: {
+          colors: {
+            espresso: '#25150C',
+            espressoDark: '#190D07',
+            cream: '#FAF5EF',
+            creamCard: '#FFFFFF',
+            latte: '#F5ECE2',
+            cinnamon: '#C87A3E',
+            cinnamonHover: '#B0672E',
+            borderCream: '#E4D5C5'
+          },
+          fontFamily: {
+            sans: ['Plus Jakarta Sans', 'sans-serif'],
+            heading: ['Montserrat', 'sans-serif']
+          }
+        }
+      }
+    }
+  </script>
+
+  <style>
+    body {
+      background-color: #120904;
+      color: #25150C;
+      font-family: 'Plus Jakarta Sans', sans-serif;
+      user-select: none;
+    }
+
+    .nav-icon-box {
+      border-radius: 18px;
+      transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+    }
+    .nav-icon-active {
+      transform: translateY(-3px) scale(1.06);
+      filter: drop-shadow(0px 4px 10px rgba(200, 122, 62, 0.45));
+    }
+
+    .custom-scroll::-webkit-scrollbar {
+      width: 4px;
+    }
+    .custom-scroll::-webkit-scrollbar-track {
+      background: transparent;
+    }
+    .custom-scroll::-webkit-scrollbar-thumb {
+      background: #E4D5C5;
+      border-radius: 10px;
+    }
+
+    @keyframes nfcPulse {
+      0% { transform: scale(0.96); opacity: 0.8; }
+      50% { transform: scale(1.08); opacity: 1; }
+      100% { transform: scale(0.96); opacity: 0.8; }
+    }
+    .nfc-anim {
+      animation: nfcPulse 1.8s infinite ease-in-out;
+    }
+
+    @keyframes pointerBounce {
+      0%, 100% { transform: translateY(0); }
+      50% { transform: translateY(-4px); }
+    }
+    .pointer-anim {
+      animation: pointerBounce 1s infinite ease-in-out;
+    }
+  </style>
+</head>
+<body class="min-h-screen flex flex-col items-center justify-between p-3 md:p-6">
+
+  <!-- Header Bar -->
+  <header class="w-full max-w-4xl mb-4 flex flex-col sm:flex-row justify-between items-center gap-3 bg-espresso p-4 rounded-2xl border border-espresso/40 shadow-2xl">
+    <div class="flex items-center gap-3">
+      <div class="w-10 h-10 bg-cinnamon text-cream rounded-xl flex items-center justify-center font-heading font-black text-2xl shadow-md border border-cream/20 shrink-0">
+        C
+      </div>
+      <div>
+        <h1 class="text-xl font-extrabold text-cream font-heading tracking-tight flex items-center gap-2">
+          Crispee <span class="text-xs bg-cinnamon/30 text-cinnamon px-2.5 py-0.5 rounded-full border border-cinnamon/40 font-sans">App Prototype</span>
+        </h1>
+        <p class="text-xs text-cream/70">Платіжна екосистема для кав'ярень</p>
+      </div>
+    </div>
+
+    <div class="flex items-center gap-2 bg-espressoDark/80 px-3.5 py-1.5 rounded-xl border border-espresso/60 text-xs text-cream/80">
+      <span class="w-2.5 h-2.5 rounded-full bg-emerald-500 animate-pulse"></span>
+      <span>Інтерактивна демо-модель</span>
+    </div>
+  </header>
+
+  <!-- MAIN PHONE FRAME -->
+  <main class="w-full flex justify-center items-center my-auto py-2">
+    
+    <div class="w-[375px] h-[760px] bg-cream rounded-[46px] border-[10px] border-espresso shadow-[0_25px_60px_-15px_rgba(0,0,0,0.8)] flex flex-col overflow-hidden relative border-t-[14px]">
+      
+      <!-- Phone Speaker Notch -->
+      <div class="absolute top-0 left-1/2 -translate-x-1/2 w-36 h-4 bg-espresso rounded-b-xl z-40 flex justify-center items-center">
+        <div class="w-12 h-1 bg-cream/20 rounded-full"></div>
+      </div>
+
+      <!-- iOS Status Bar (HH:MM) -->
+      <div class="pt-5 px-6 pb-2 flex justify-between items-center text-xs font-extrabold text-espresso z-30 tracking-tight">
+        <span id="liveClock" class="font-mono text-[13px] text-espresso">15:01</span>
+        <div class="flex items-center gap-1.5">
+          <i class="fa-solid fa-signal text-[11px]"></i>
+          <i class="fa-solid fa-wifi text-[11px]"></i>
+          <i class="fa-solid fa-battery-full text-sm"></i>
+        </div>
+      </div>
+
+      <!-- Dynamic Screen Content -->
+      <div id="phoneScreen" class="flex-1 overflow-y-auto custom-scroll px-4 pb-28">
+        <!-- Rendered via JavaScript -->
+      </div>
+
+      <!-- Bottom Floating Rounded Navigation Bar -->
+      <nav class="absolute bottom-3 inset-x-3 bg-espresso/95 backdrop-blur-lg px-4 py-2.5 rounded-3xl flex justify-around items-center z-30 border border-cinnamon/30 shadow-[0_10px_25px_rgba(0,0,0,0.6)]">
+        
+        <!-- LEFT: Promo (🎁) -->
+        <button onclick="setActiveTab('promo')" class="flex flex-col items-center group focus:outline-none">
+          <div id="navHexPromo" class="w-11 h-11 nav-icon-box flex items-center justify-center text-white text-base shadow-lg">
+            <i class="fa-solid fa-gift"></i>
+          </div>
+          <span id="navTextPromo" class="text-[10px] font-bold mt-1">Промо</span>
+        </button>
+
+        <!-- CENTER: Home (🏠) -->
+        <button onclick="setActiveTab('home')" class="flex flex-col items-center group focus:outline-none">
+          <div id="navHexHome" class="w-11 h-11 nav-icon-box flex items-center justify-center text-white text-base shadow-lg">
+            <i class="fa-solid fa-house"></i>
+          </div>
+          <span id="navTextHome" class="text-[10px] font-bold mt-1">Головна</span>
+        </button>
+
+        <!-- RIGHT: Card (💳) -->
+        <button onclick="setActiveTab('card')" class="flex flex-col items-center group focus:outline-none">
+          <div id="navHexCard" class="w-11 h-11 nav-icon-box flex items-center justify-center text-white text-base shadow-lg">
+            <i class="fa-solid fa-credit-card"></i>
+          </div>
+          <span id="navTextCard" class="text-[10px] font-bold mt-1">Картка</span>
+        </button>
+
+      </nav>
+    </div>
+  </main>
+
+  <!-- MODALS -->
+
+  <!-- 1. Wheel of Fortune Modal -->
+  <div id="wheelModal" class="hidden fixed inset-0 bg-black/80 backdrop-blur-sm z-50 flex items-center justify-center p-4">
+    <div class="bg-cream border-2 border-cinnamon w-full max-w-sm rounded-3xl p-5 text-center shadow-2xl relative">
+      <button onclick="closeModal('wheelModal')" class="absolute top-4 right-4 w-8 h-8 rounded-full bg-latte text-espresso font-bold flex items-center justify-center hover:bg-cinnamon hover:text-white transition">✕</button>
+
+      <h3 class="text-lg font-extrabold font-heading text-espresso mb-0.5">Колесо Фортуни Crispee</h3>
+      <p class="text-xs text-espresso/70 mb-3">Вигравайте знижки та вигідні бонуси щодня!</p>
+
+      <div class="relative w-48 h-48 mx-auto my-2">
+        <div class="absolute -top-2 left-1/2 -translate-x-1/2 w-0 h-0 border-l-8 border-l-transparent border-r-8 border-r-transparent border-t-[14px] border-t-cinnamon z-20 pointer-anim"></div>
+
+        <div id="wheelGraphic" class="w-full h-full rounded-full transition-transform duration-[4000ms] cubic-bezier(0.15, 0.85, 0.15, 1) shadow-2xl border-4 border-cinnamon overflow-hidden">
+          <svg viewBox="0 0 200 200" class="w-full h-full">
+            <g transform="translate(100,100)">
+              <path d="M 0 0 L 100 0 A 100 100 0 0 1 50 86.6 Z" fill="#C87A3E"/>
+              <path d="M 0 0 L 50 86.6 A 100 100 0 0 1 -50 86.6 Z" fill="#25150C"/>
+              <path d="M 0 0 L -50 86.6 A 100 100 0 0 1 -100 0 Z" fill="#C87A3E"/>
+              <path d="M 0 0 L -100 0 A 100 100 0 0 1 -50 -86.6 Z" fill="#25150C"/>
+              <path d="M 0 0 L -50 -86.6 A 100 100 0 0 1 50 -86.6 Z" fill="#C87A3E"/>
+              <path d="M 0 0 L 50 -86.6 A 100 100 0 0 1 100 0 Z" fill="#25150C"/>
+            </g>
+          </svg>
+        </div>
+
+        <div class="absolute inset-0 m-auto w-12 h-12 rounded-full bg-cream border-2 border-espresso flex items-center justify-center shadow-md z-10">
+          <span class="font-heading font-black text-xl text-espresso">C</span>
+        </div>
+      </div>
+
+      <button onclick="spinWheel()" class="mt-3 w-full py-3 bg-cinnamon hover:bg-cinnamonHover text-white font-bold text-xs rounded-xl transition shadow-lg flex items-center justify-center gap-1.5">
+        <i class="fa-solid fa-arrows-spin"></i> Крутити колесо
+      </button>
+    </div>
+  </div>
+
+  <!-- 2. Prize Modal -->
+  <div id="prizeModal" class="hidden fixed inset-0 bg-black/85 backdrop-blur-sm z-50 flex items-center justify-center p-4">
+    <div class="bg-cream border-2 border-cinnamon w-full max-w-sm rounded-3xl p-6 text-center shadow-2xl relative">
+      <div class="w-16 h-16 mx-auto mb-3 rounded-full bg-cinnamon/20 text-cinnamon flex items-center justify-center text-3xl">
+        🎉
+      </div>
+      <h3 class="text-xl font-extrabold font-heading text-espresso mb-1">Вітаємо з виграшем!</h3>
+      <p class="text-xs text-espresso/70 mb-4">Ви виграли вигідну пропозицію від партнера:</p>
+
+      <div class="bg-white p-4 rounded-2xl border-2 border-dashed border-cinnamon mb-4">
+        <p id="prizeTitle" class="text-base font-extrabold text-cinnamon font-heading">Львівські Круасани -50%</p>
+        <p id="prizeCode" class="text-xs font-mono font-bold text-espresso mt-1 tracking-wider">CRISPEE-WIN-2026</p>
+      </div>
+
+      <button onclick="claimPrize()" class="w-full py-2.5 bg-cinnamon hover:bg-cinnamonHover text-white font-bold rounded-xl shadow transition text-xs">
+        Зберегти в мої промокоди
+      </button>
+    </div>
+  </div>
+
+  <!-- 3. NFC Payment Modal -->
+  <div id="nfcModal" class="hidden fixed inset-0 bg-black/80 backdrop-blur-sm z-50 flex items-center justify-center p-4">
+    <div class="bg-cream border-2 border-cinnamon w-full max-w-sm rounded-3xl p-6 text-center shadow-2xl relative">
+      <button onclick="closeModal('nfcModal')" class="absolute top-4 right-4 w-8 h-8 rounded-full bg-latte text-espresso font-bold flex items-center justify-center hover:bg-cinnamon hover:text-white transition">✕</button>
+      
+      <div class="w-24 h-24 mx-auto my-4 bg-espresso rounded-full flex items-center justify-center border-4 border-cinnamon shadow-xl nfc-anim">
+        <i class="fa-solid fa-wifi text-cinnamon text-4xl -rotate-90"></i>
+      </div>
+
+      <h3 class="text-xl font-extrabold font-heading text-espresso mb-1">NFC SoftPOS Оплата</h3>
+      <p class="text-xs text-espresso/70 mb-6">Прикладіть смартфон до SoftPOS-термінала касира кав'ярні</p>
+
+      <div class="bg-white p-3 rounded-xl border border-borderCream mb-4 text-left flex items-center justify-between shadow-sm">
+        <div>
+          <p class="text-[10px] text-espresso/60 font-bold uppercase">Картка списання</p>
+          <p class="text-xs font-bold text-espresso">Crispee (*8910)</p>
+        </div>
+        <span class="text-[11px] bg-emerald-100 text-emerald-800 font-bold px-2 py-0.5 rounded-md">Активна</span>
+      </div>
+
+      <button onclick="simulateNfcSuccess()" class="w-full py-3 bg-cinnamon hover:bg-cinnamonHover text-white font-bold rounded-xl shadow-lg transition text-xs">
+        <i class="fa-solid fa-check-double mr-2"></i> Симуляція доторку до термінала
+      </button>
+    </div>
+  </div>
+
+  <!-- 4. Dynamic QR Code Modal -->
+  <div id="qrModal" class="hidden fixed inset-0 bg-black/80 backdrop-blur-sm z-50 flex items-center justify-center p-4">
+    <div class="bg-cream border-2 border-borderCream w-full max-w-sm rounded-3xl p-6 text-center shadow-2xl relative">
+      <button onclick="closeModal('qrModal')" class="absolute top-4 right-4 w-8 h-8 rounded-full bg-latte text-espresso font-bold flex items-center justify-center hover:bg-cinnamon hover:text-white transition">✕</button>
+      
+      <h3 class="text-xl font-extrabold font-heading text-espresso mb-1">Персональний QR-код</h3>
+      <p class="text-xs text-espresso/70 mb-4">Покажіть код касиру для знижки чи розрахунку</p>
+
+      <div class="bg-white p-5 rounded-2xl border-2 border-espresso/20 inline-block shadow-inner mb-4">
+        <div class="w-44 h-44 bg-espresso p-2 rounded-lg flex flex-col justify-between items-center relative overflow-hidden">
+          <div class="grid grid-cols-6 gap-1 w-full h-full">
+            <script>
+              for(let i=0; i<36; i++){
+                let bg = (i%2===0 || i%5===0) ? 'bg-cream' : 'bg-cinnamon';
+                document.write(`<div class="${bg} rounded-sm"></div>`);
+              }
+            </script>
+          </div>
+          <div class="absolute inset-0 flex items-center justify-center">
+            <div class="w-10 h-10 bg-cinnamon rounded-xl border-2 border-espresso flex items-center justify-center shadow-lg text-cream font-heading font-black text-2xl">
+              C
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div class="flex items-center justify-center gap-2 text-xs font-semibold text-espresso/70 mb-4">
+        <i class="fa-solid fa-rotate-right animate-spin text-cinnamon"></i>
+        <span>Оновлення через <strong id="qrTimer">45</strong> сек</span>
+      </div>
+
+      <button onclick="closeModal('qrModal')" class="w-full py-2.5 bg-espresso text-cream font-bold rounded-xl text-xs">
+        Закрити
+      </button>
+    </div>
+  </div>
+
+  <!-- 5. Split Bill Modal -->
+  <div id="splitModal" class="hidden fixed inset-0 bg-black/80 backdrop-blur-sm z-50 flex items-center justify-center p-4">
+    <div class="bg-cream border-2 border-borderCream w-full max-w-sm rounded-3xl p-6 shadow-2xl relative">
+      <button onclick="closeModal('splitModal')" class="absolute top-4 right-4 w-8 h-8 rounded-full bg-latte text-espresso font-bold flex items-center justify-center hover:bg-cinnamon hover:text-white transition">✕</button>
+
+      <div class="flex items-center gap-3 mb-4">
+        <div class="w-10 h-10 rounded-2xl bg-cinnamon/20 text-cinnamon flex items-center justify-center text-lg font-bold">
+          <i class="fa-solid fa-users-viewfinder"></i>
+        </div>
+        <div>
+          <h3 class="text-lg font-extrabold font-heading text-espresso">P2P Split Bill</h3>
+          <p class="text-[11px] text-espresso/70">Розподіліть чек з друзями</p>
+        </div>
+      </div>
+
+      <div class="bg-white p-3 rounded-2xl border border-borderCream mb-4 shadow-sm">
+        <label class="block text-[10px] font-bold text-espresso/60 mb-1 uppercase">Загальна сума чека (₴)</label>
+        <div class="flex items-center gap-2">
+          <input type="number" id="splitAmount" value="270" oninput="calculateSplit()" class="w-full text-2xl font-extrabold text-espresso focus:outline-none">
+          <span class="text-sm font-bold text-cinnamon">UAH</span>
+        </div>
+      </div>
+
+      <p class="text-xs font-bold text-espresso mb-2">Обери друзів:</p>
+      <div class="space-y-2 mb-5">
+        <label class="flex items-center justify-between p-2.5 bg-white rounded-xl border border-borderCream cursor-pointer hover:border-cinnamon">
+          <div class="flex items-center gap-2.5">
+            <input type="checkbox" checked onchange="calculateSplit()" class="friend-check w-4 h-4 accent-cinnamon rounded">
+            <span class="text-xs font-semibold text-espresso">Софія Поповіченко</span>
+          </div>
+          <span class="text-xs font-bold text-cinnamon friend-share">90 ₴</span>
+        </label>
+        <label class="flex items-center justify-between p-2.5 bg-white rounded-xl border border-borderCream cursor-pointer hover:border-cinnamon">
+          <div class="flex items-center gap-2.5">
+            <input type="checkbox" checked onchange="calculateSplit()" class="friend-check w-4 h-4 accent-cinnamon rounded">
+            <span class="text-xs font-semibold text-espresso">Максим Лебединець</span>
+          </div>
+          <span class="text-xs font-bold text-cinnamon friend-share">90 ₴</span>
+        </label>
+      </div>
+
+      <button onclick="sendSplitRequest()" class="w-full py-3 bg-cinnamon hover:bg-cinnamonHover text-white font-bold rounded-xl shadow-lg transition text-xs">
+        <i class="fa-solid fa-paper-plane mr-1.5"></i> Надіслати запит на оплату
+      </button>
+    </div>
+  </div>
+
+  <!-- 6. Take Away Modal (ORDER AHEAD WITH CUSTOM TIME & NO BADGES) -->
+  <div id="takeawayModal" class="hidden fixed inset-0 bg-black/80 backdrop-blur-sm z-50 flex items-center justify-center p-4">
+    <div class="bg-cream border-2 border-cinnamon w-full max-w-sm rounded-3xl p-6 shadow-2xl relative max-h-[90vh] overflow-y-auto custom-scroll">
+      <button onclick="closeModal('takeawayModal')" class="absolute top-4 right-4 w-8 h-8 rounded-full bg-latte text-espresso font-bold flex items-center justify-center hover:bg-cinnamon hover:text-white transition">✕</button>
+
+      <div class="flex items-center gap-3 mb-3">
+        <div class="w-10 h-10 rounded-2xl bg-cinnamon text-white flex items-center justify-center text-lg font-bold shadow">
+          <i class="fa-solid fa-person-walking-luggage"></i>
+        </div>
+        <div>
+          <h3 id="takeawayCafeTitle" class="text-base font-extrabold font-heading text-espresso">Львівські Круасани</h3>
+          <p class="text-[11px] text-cinnamon font-bold">⏱ Передзамовлення «Take Away»</p>
+        </div>
+      </div>
+
+      <p class="text-[11px] text-espresso/70 mb-3">Оберіть зручний час та напої. Бариста приготує все без черги!</p>
+
+      <!-- Custom Time selector (No class references) -->
+      <div class="bg-white p-3 rounded-2xl border border-borderCream mb-3">
+        <label class="block text-[10px] font-bold text-espresso/60 mb-1 uppercase">Час самовивозу:</label>
+        <select id="pickupTimeSelect" class="w-full text-xs font-bold text-espresso bg-latte p-2 rounded-xl border border-borderCream focus:outline-none">
+          <option value="Через 15 хв">Через 15 хвилин</option>
+          <option value="Через 30 хв">Через 30 хвилин</option>
+          <option value="14:30">О 14:30</option>
+          <option value="15:00">О 15:00</option>
+          <option value="16:00">О 16:00</option>
+          <option value="17:30">О 17:30</option>
+        </select>
+      </div>
+
+      <p class="text-xs font-bold text-espresso mb-2">Меню передзамовлення:</p>
+      <div id="takeawayMenuContainer" class="space-y-2 mb-4">
+        <!-- Menu injected dynamically -->
+      </div>
+
+      <div class="flex justify-between items-center mb-4 bg-espresso text-cream p-3 rounded-2xl">
+        <div>
+          <p class="text-[10px] text-cream/70 uppercase font-bold">Разом до сплати:</p>
+          <p id="takeawayTotalText" class="text-lg font-extrabold text-cinnamon">55 ₴</p>
+        </div>
+        <span class="text-xs text-cream/60 font-medium">Готово точно вчасно</span>
+      </div>
+
+      <button onclick="confirmTakeawayOrder()" class="w-full py-3 bg-cinnamon hover:bg-cinnamonHover text-white font-bold rounded-xl shadow-lg transition text-xs flex items-center justify-center gap-2">
+        <i class="fa-solid fa-bolt"></i> Підтвердити передзамовлення
+      </button>
+    </div>
+  </div>
+
+  <!-- Notification Toast -->
+  <div id="toast" class="fixed bottom-6 right-6 bg-espresso text-cream border-2 border-cinnamon px-5 py-3 rounded-2xl shadow-2xl z-50 flex items-center gap-3 transform translate-y-24 opacity-0 transition-all duration-300 max-w-xs">
+    <div class="w-8 h-8 rounded-full bg-cinnamon flex items-center justify-center text-white text-sm font-bold shrink-0">
+      <i class="fa-solid fa-bell"></i>
+    </div>
+    <div>
+      <p id="toastTitle" class="text-xs font-bold text-white">Сповіщення</p>
+      <p id="toastMsg" class="text-[11px] text-cream/80">Операція успішна!</p>
+    </div>
+  </div>
+
+
+  <!-- JAVASCRIPT LOGIC -->
+  <script>
+    let activeTab = 'home';
+    let userBalance = 480.00;
+    let userBonuses = 350;
+    let userXP = 750;
+    let userLevel = 3;
+    let filterCategory = 'all';
+    let searchQuery = '';
+    let isSpinning = false;
+    let wheelRotation = 0;
+
+    let activeOrders = [];
+    let selectedCafeForTakeaway = null;
+
+    const wheelPrizes = [
+      { name: "Львівські Круасани -50%", code: "CRISPEE-CROISSANT-50" },
+      { name: "АромаКава: Безкоштовна кава", code: "CRISPEE-AROMA-FREE" },
+      { name: "Баблтішна: 1+1 на Тапіоку", code: "CRISPEE-BUBBLE-1PLUS1" },
+      { name: "СПЕШЛТІ: -30% на дріпи", code: "CRISPEE-SPECIALTY-30" },
+      { name: "Пекарня Франсуа: -15%", code: "CRISPEE-FRANCOIS-15" },
+      { name: "Idealist Coffee: Безкоштовний дріп", code: "CRISPEE-IDEALIST-DRIP" }
+    ];
+
+    // Structured, concise Vibe Check highlights for easy browsing
+    const cafes = [
+      {
+        id: 1,
+        name: "Львівські Круасани",
+        address: "вул. Гната Хоткевича, 1В • 1.1 км",
+        discount: "Спеціальне комбо за 85 ₴",
+        badge: "📍 Поруч",
+        category: "near",
+        image: "https://images.unsplash.com/photo-1555507036-ab1f4038808a?auto=format&fit=crop&w=600&q=80",
+        rating: "4.9",
+        vibeChips: [
+          { icon: "🔌", text: "Розетки всюди" },
+          { icon: "📶", text: "140 Мбіт/с" },
+          { icon: "🪑", text: "Багато місць" }
+        ],
+        menu: [
+          { id: 'm1', name: 'Капучино Гранд', price: 55 },
+          { id: 'm2', name: 'Круасан з шинкою та сиром', price: 75 },
+          { id: 'm3', name: 'Лимонад класичний', price: 40 }
+        ]
+      },
+      {
+        id: 2,
+        name: "АромаКава (AROMA KAVA)",
+        address: "вул. Гетьмана Полуботка, 9А • 850 м",
+        discount: "Кожна 6-та кава за 1 ₴ з Crispee",
+        badge: "🟢 Відчинено",
+        category: "open",
+        image: "https://images.unsplash.com/photo-1509042239860-f550ce710b93?auto=format&fit=crop&w=600&q=80",
+        rating: "4.8",
+        vibeChips: [
+          { icon: "⚡️", text: "Швидкий самовивіз" },
+          { icon: "📶", text: "95 Мбіт/с" },
+          { icon: "🔌", text: "Розетки біля вікон" }
+        ],
+        menu: [
+          { id: 'm4', name: 'Американо з молоком', price: 42 },
+          { id: 'm5', name: 'Лате макіато', price: 58 },
+          { id: 'm6', name: 'Сендвіч з куркою', price: 65 }
+        ]
+      },
+      {
+        id: 3,
+        name: "СПЕШЛТІ",
+        address: "вул. Миколи Матеюка, 4 • 350 м",
+        discount: "Знижка 20% на фільтр-каву та дріпи",
+        badge: "⭐️ Збережене",
+        category: "study",
+        image: "https://images.unsplash.com/photo-1514432324607-a09d9b4aefdd?auto=format&fit=crop&w=600&q=80",
+        rating: "4.9",
+        vibeChips: [
+          { icon: "🤫", text: "Тиха атмосфера" },
+          { icon: "🔌", text: "Розетка на 100% столів" },
+          { icon: "📶", text: "210 Мбіт/с" }
+        ],
+        menu: [
+          { id: 'm7', name: 'Фільтр-кава Batch Brew', price: 50 },
+          { id: 'm8', name: 'Дріп-кава Колумбія', price: 45 },
+          { id: 'm9', name: 'Баскський чизкейк', price: 85 }
+        ]
+      },
+      {
+        id: 4,
+        name: "Баблтішна",
+        address: "вул. Андрія Малишка, 3C • 1.2 км",
+        discount: "Кешбек 15% бонусами Crispee",
+        badge: "📍 Поруч",
+        category: "near",
+        image: "https://images.unsplash.com/photo-1558857563-b371033873b8?auto=format&fit=crop&w=600&q=80",
+        rating: "4.7",
+        vibeChips: [
+          { icon: "🎵", text: "Затишний чил-вайб" },
+          { icon: "🪑", text: "Дивани для компаній" },
+          { icon: "📶", text: "80 Мбіт/с" }
+        ],
+        menu: [
+          { id: 'm10', name: 'Bubble Tea Тапіока-Молочний', price: 85 },
+          { id: 'm11', name: 'Фруктовий чай Манго-Папайя', price: 75 }
+        ]
+      },
+      {
+        id: 5,
+        name: "Пекарня Франсуа",
+        address: "вул. Кіото, 25 • 400 м",
+        discount: "Свіжа випічка зі знижкою 15%",
+        badge: "🟢 Відчинено",
+        category: "open",
+        image: "https://images.unsplash.com/photo-1509440159596-0249088772ff?auto=format&fit=crop&w=600&q=80",
+        rating: "4.8",
+        vibeChips: [
+          { icon: "🥐", text: "Свіжа випічка" },
+          { icon: "☕️", text: "Затишні столики" },
+          { icon: "🔌", text: "4 розетки" }
+        ],
+        menu: [
+          { id: 'm12', name: 'Французький багет з тунцем', price: 70 },
+          { id: 'm13', name: 'Капучино медіум', price: 48 }
+        ]
+      },
+      {
+        id: 6,
+        name: "Idealist Coffee",
+        address: "Броварський проспект, 17 • 950 м",
+        discount: "Дріп-кава в подарунок до замовлення",
+        badge: "⭐️ Збережене",
+        category: "study",
+        image: "https://images.unsplash.com/photo-1495474472287-4d71bcdd2085?auto=format&fit=crop&w=600&q=80",
+        rating: "4.9",
+        vibeChips: [
+          { icon: "💻", text: "Робоча зона" },
+          { icon: "📶", text: "180 Мбіт/с" },
+          { icon: "🤫", text: "Зона для зумів" }
+        ],
+        menu: [
+          { id: 'm14', name: 'Flat White', price: 65 },
+          { id: 'm15', name: 'Авокадо-тост', price: 120 }
+        ]
+      }
+    ];
+
+    window.onload = function() {
+      updateLiveClock();
+      setInterval(updateLiveClock, 1000);
+      setInterval(updateQrTimer, 1000);
+      renderScreen();
+    };
+
+    function updateLiveClock() {
+      const now = new Date();
+      const hrs = String(now.getHours()).padStart(2, '0');
+      const mins = String(now.getMinutes()).padStart(2, '0');
+      document.getElementById('liveClock').textContent = `${hrs}:${mins}`;
+    }
+
+    function setActiveTab(tab) {
+      activeTab = tab;
+      renderScreen();
+    }
+
+    function renderScreen() {
+      const container = document.getElementById('phoneScreen');
+      if (!container) return;
+
+      if (activeTab === 'home') {
+        container.innerHTML = renderHomeTab();
+      } else if (activeTab === 'promo') {
+        container.innerHTML = renderPromoTab();
+      } else if (activeTab === 'card') {
+        container.innerHTML = renderCardTab();
+      }
+
+      updateNavUI();
+    }
+
+    function updateNavUI() {
+      const tabs = ['promo', 'home', 'card'];
+      tabs.forEach(t => {
+        const hex = document.getElementById(`navHex${capitalize(t)}`);
+        const txt = document.getElementById(`navText${capitalize(t)}`);
+        if (!hex || !txt) return;
+        if (t === activeTab) {
+          hex.className = 'w-11 h-11 nav-icon-box bg-cinnamon nav-icon-active flex items-center justify-center text-white text-base shadow-lg';
+          txt.className = 'text-[10px] font-bold mt-1 text-cinnamon';
+        } else {
+          hex.className = 'w-11 h-11 nav-icon-box bg-espressoDark hover:bg-cinnamon/50 flex items-center justify-center text-white text-base shadow-lg';
+          txt.className = 'text-[10px] font-bold mt-1 text-cream/60';
+        }
+      });
+    }
+
+    function capitalize(s) {
+      return s.charAt(0).toUpperCase() + s.slice(1);
+    }
+
+    // PAGE 1: PROMO (🎁)
+    function renderPromoTab() {
+      return `
+        <div class="space-y-3 pt-1">
+          <!-- Pinned Referral Block -->
+          <div class="bg-white p-3.5 rounded-2xl border border-borderCream shadow-sm">
+            <div class="flex items-center gap-2 mb-1.5">
+              <div class="w-6 h-6 rounded-lg bg-cinnamon/20 text-cinnamon flex items-center justify-center text-xs">
+                <i class="fa-solid fa-user-plus"></i>
+              </div>
+              <h3 class="text-xs font-extrabold text-espresso font-heading uppercase tracking-wider">Запроси друга</h3>
+            </div>
+            <p class="text-[11px] text-espresso/80 font-medium leading-relaxed mb-2.5">
+              Ділись запрошувальним посиланням та отримай бонуси за кожного друга.
+            </p>
+            <div class="flex items-center gap-2 bg-cream p-1.5 rounded-xl border border-borderCream">
+              <input type="text" readonly value="crispee.app/r/vlad2026" class="w-full text-[11px] font-mono font-bold text-espresso bg-transparent px-2 focus:outline-none">
+              <button onclick="copyRefLink()" class="px-3 py-1.5 bg-cinnamon hover:bg-cinnamonHover text-white text-[10px] font-bold rounded-lg shadow transition shrink-0">
+                Копіювати
+              </button>
+            </div>
+          </div>
+
+          <!-- REDESIGNED ACHIEVEMENTS SECTION (CLEAR & FUNCTIONAL) -->
+          <div class="bg-white p-3.5 rounded-2xl border border-borderCream shadow-sm">
+            <div class="flex justify-between items-center mb-2">
+              <div class="flex items-center gap-2">
+                <div class="w-8 h-8 rounded-xl bg-cinnamon/20 text-cinnamon flex items-center justify-center text-base font-bold">
+                  🏆
+                </div>
+                <div>
+                  <h4 class="text-xs font-extrabold text-espresso font-heading">Рівень ${userLevel}: Кавовий Магістр</h4>
+                  <p class="text-[9px] text-espresso/60 font-semibold">${userXP} / 1000 XP (75% виконано)</p>
+                </div>
+              </div>
+              <span class="text-[10px] bg-amber-100 text-amber-800 font-extrabold px-2 py-0.5 rounded-md">
+                +50 ⚡️ за новий рівень
+              </span>
+            </div>
+
+            <!-- XP Progress Bar -->
+            <div class="w-full h-2 bg-latte rounded-full overflow-hidden mb-3.5 border border-borderCream/60">
+              <div class="h-full bg-cinnamon rounded-full transition-all duration-500" style="width: 75%;"></div>
+            </div>
+
+            <p class="text-[10px] font-bold text-espresso/70 uppercase tracking-wider mb-2">Студентські Досягнення:</p>
+            
+            <div class="space-y-2">
+              <!-- Achievement Item 1 -->
+              <div onclick="showAchievementDetails('owl')" class="p-2.5 bg-latte/60 rounded-xl border border-borderCream flex justify-between items-center cursor-pointer hover:border-cinnamon transition">
+                <div class="flex items-center gap-2.5">
+                  <span class="text-lg">🦉</span>
+                  <div>
+                    <p class="text-xs font-bold text-espresso">«Ранкова сова»</p>
+                    <p class="text-[9px] text-espresso/60">Замовлення до 8:30 ранку</p>
+                  </div>
+                </div>
+                <div class="text-right">
+                  <span class="text-[10px] font-extrabold text-cinnamon bg-white px-2 py-0.5 rounded-md border border-borderCream">3 / 5</span>
+                  <p class="text-[8px] text-espresso/50 mt-0.5">Ще 2 кави</p>
+                </div>
+              </div>
+
+              <!-- Achievement Item 2 -->
+              <div onclick="showAchievementDetails('croissant')" class="p-2.5 bg-emerald-50 rounded-xl border border-emerald-300 flex justify-between items-center cursor-pointer">
+                <div class="flex items-center gap-2.5">
+                  <span class="text-lg">🥐</span>
+                  <div>
+                    <p class="text-xs font-bold text-espresso">«Круасан-монстр»</p>
+                    <p class="text-[9px] text-emerald-800 font-medium">Спробовано у 3 пекарнях</p>
+                  </div>
+                </div>
+                <span class="text-[10px] font-extrabold text-white bg-emerald-600 px-2 py-0.5 rounded-md shadow-sm">
+                  ✅ Виконано (+50 ⚡️)
+                </span>
+              </div>
+
+              <!-- Achievement Item 3 -->
+              <div onclick="showAchievementDetails('company')" class="p-2.5 bg-latte/60 rounded-xl border border-borderCream flex justify-between items-center cursor-pointer hover:border-cinnamon transition">
+                <div class="flex items-center gap-2.5">
+                  <span class="text-lg">🤝</span>
+                  <div>
+                    <p class="text-xs font-bold text-espresso">«Душа компанії»</p>
+                    <p class="text-[9px] text-espresso/60">Спліт чека з друзями</p>
+                  </div>
+                </div>
+                <div class="text-right">
+                  <span class="text-[10px] font-extrabold text-cinnamon bg-white px-2 py-0.5 rounded-md border border-borderCream">2 / 5</span>
+                  <p class="text-[8px] text-espresso/50 mt-0.5">Ще 3 спліти</p>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <!-- Wheel of Fortune Banner -->
+          <div class="bg-espresso text-cream p-4 rounded-2xl border border-cinnamon/30 shadow-md relative overflow-hidden">
+            <div class="flex items-center gap-3 mb-2.5">
+              <div class="w-10 h-10 rounded-xl bg-cinnamon text-white flex items-center justify-center text-lg font-bold shadow shrink-0">
+                <i class="fa-solid fa-arrows-spin"></i>
+              </div>
+              <div>
+                <h3 class="text-xs font-extrabold font-heading text-cream">Колесо Фортуни Crispee</h3>
+                <p class="text-[10px] text-cream/70">Вигравайте знижки та вигідні бонуси щодня!</p>
+              </div>
+            </div>
+            <button onclick="openModal('wheelModal')" class="w-full py-2 bg-cinnamon hover:bg-cinnamonHover text-white font-bold text-xs rounded-xl shadow transition flex items-center justify-center gap-1.5">
+              <i class="fa-solid fa-play text-[10px]"></i> Крутити колесо
+            </button>
+          </div>
+
+          <!-- Student Happy Hour Promo Card -->
+          <div class="bg-white p-3.5 rounded-2xl border border-borderCream shadow-sm relative overflow-hidden">
+            <div class="flex justify-between items-start mb-1">
+              <span class="text-[9px] bg-cinnamon/20 text-cinnamon font-extrabold px-2 py-0.5 rounded-full uppercase tracking-wider">
+                Студентський Happy Hour
+              </span>
+              <span class="text-lg font-black text-cinnamon font-heading">-30%</span>
+            </div>
+            <h4 class="text-xs font-extrabold text-espresso font-heading mt-1">Знижка 30% на еспресо-напої</h4>
+            <p class="text-[10px] text-espresso/60 mt-0.5">Щодня з 14:00 до 16:00 у закладах-партнерах</p>
+          </div>
+
+          <!-- Special Partner Combos Section -->
+          <div>
+            <h4 class="text-xs font-bold text-espresso/70 uppercase tracking-wider mb-2">Акційні комбо кав'ярень:</h4>
+            <div class="space-y-2">
+              <div class="bg-white p-2.5 rounded-xl border border-borderCream flex justify-between items-center shadow-sm">
+                <div class="flex items-center gap-2.5">
+                  <img src="https://images.unsplash.com/photo-1555507036-ab1f4038808a?auto=format&fit=crop&w=150&q=80" class="w-9 h-9 rounded-lg object-cover">
+                  <div>
+                    <p class="text-xs font-bold text-espresso">Львівські Круасани</p>
+                    <p class="text-[10px] text-cinnamon font-semibold">Капучино + Круасан за 85 ₴</p>
+                  </div>
+                </div>
+                <span class="text-[10px] bg-latte text-espresso font-bold px-2 py-1 rounded-lg border border-borderCream">АКЦІЯ</span>
+              </div>
+
+              <div class="bg-white p-2.5 rounded-xl border border-borderCream flex justify-between items-center shadow-sm">
+                <div class="flex items-center gap-2.5">
+                  <img src="https://images.unsplash.com/photo-1509042239860-f550ce710b93?auto=format&fit=crop&w=150&q=80" class="w-9 h-9 rounded-lg object-cover">
+                  <div>
+                    <p class="text-xs font-bold text-espresso">АромаКава (AROMA KAVA)</p>
+                    <p class="text-[10px] text-cinnamon font-semibold">Кожна 6-та кава за 1 ₴</p>
+                  </div>
+                </div>
+                <span class="text-[10px] bg-latte text-espresso font-bold px-2 py-1 rounded-lg border border-borderCream">СПЕЦЦІНА</span>
+              </div>
+            </div>
+          </div>
+        </div>
+      `;
+    }
+
+    // Live Search Handling
+    function handleSearch(val) {
+      searchQuery = val;
+      updateCafeFeed();
+      const clearBtn = document.getElementById('searchClearBtn');
+      if (clearBtn) {
+        if (searchQuery.trim().length > 0) {
+          clearBtn.classList.remove('hidden');
+        } else {
+          clearBtn.classList.add('hidden');
+        }
+      }
+    }
+
+    function clearSearch() {
+      searchQuery = '';
+      const input = document.getElementById('searchInput');
+      if (input) {
+        input.value = '';
+        input.focus();
+      }
+      const clearBtn = document.getElementById('searchClearBtn');
+      if (clearBtn) clearBtn.classList.add('hidden');
+      updateCafeFeed();
+    }
+
+    function updateCafeFeed() {
+      const container = document.getElementById('cafeFeedContainer');
+      if (!container) return;
+
+      let filteredCafes = cafes;
+      if (filterCategory !== 'all') {
+        filteredCafes = filteredCafes.filter(c => c.category === filterCategory);
+      }
+
+      const q = searchQuery.trim().toLowerCase();
+      if (q.length > 0) {
+        filteredCafes = filteredCafes.filter(c => 
+          c.name.toLowerCase().includes(q) || 
+          c.address.toLowerCase().includes(q) ||
+          c.discount.toLowerCase().includes(q)
+        );
+      }
+
+      container.innerHTML = renderCafeListHtml(filteredCafes);
+    }
+
+    // Cafe Cards Render (Single TakeAway Button ONLY, Streamlined Vibe Chips)
+    function renderCafeListHtml(filteredCafes) {
+      if (filteredCafes.length > 0) {
+        return filteredCafes.map(cafe => `
+          <div class="bg-white rounded-2xl overflow-hidden border border-borderCream shadow-sm hover:shadow-md transition">
+            <div class="relative h-28 w-full">
+              <img src="${cafe.image}" class="w-full h-full object-cover">
+              <span class="absolute top-2 left-2 bg-espresso/80 backdrop-blur-md text-cream text-[10px] font-bold px-2 py-0.5 rounded-md">
+                ${cafe.badge}
+              </span>
+              <span class="absolute bottom-2 right-2 bg-white/95 text-espresso text-[10px] font-extrabold px-2 py-0.5 rounded-md shadow">
+                ⭐ ${cafe.rating}
+              </span>
+            </div>
+            
+            <div class="p-3">
+              <h3 class="font-extrabold text-xs text-espresso font-heading">${cafe.name}</h3>
+              <p class="text-[10px] text-espresso/60 mt-0.5 font-medium">${cafe.address}</p>
+
+              <!-- STREAMLINED VIBE CHECK HIGHLIGHTS -->
+              <div class="mt-2 flex flex-wrap gap-1">
+                ${cafe.vibeChips.map(vc => `
+                  <span class="text-[9px] bg-latte text-espresso font-semibold px-2 py-0.5 rounded-md border border-borderCream/80 flex items-center gap-1">
+                    <span>${vc.icon}</span> ${vc.text}
+                  </span>
+                `).join('')}
+              </div>
+              
+              <div class="mt-3 pt-2.5 border-t border-latte flex items-center justify-between gap-2">
+                <span class="text-[10px] font-bold text-cinnamon truncate">${cafe.discount}</span>
+                
+                <!-- ONLY TakeAway BUTTON -->
+                <button onclick="openTakeawayModal(${cafe.id})" title="Забирай без черги" class="px-3 py-1.5 bg-espresso hover:bg-espressoDark text-cream text-[10px] font-bold rounded-xl shadow-sm flex items-center gap-1.5 shrink-0 transition">
+                  <i class="fa-solid fa-clock-rotate-left text-[9px]"></i> ⏱ Take Away
+                </button>
+              </div>
+            </div>
+          </div>
+        `).join('');
+      } else {
+        return `
+          <div class="bg-white rounded-2xl p-6 text-center border border-borderCream shadow-sm my-4">
+            <div class="w-12 h-12 mx-auto mb-2 rounded-full bg-latte text-cinnamon flex items-center justify-center text-xl">
+              <i class="fa-solid fa-mug-hot"></i>
+            </div>
+            <p class="text-xs font-bold text-espresso">Нічого не знайдено</p>
+            <p class="text-[11px] text-espresso/60 mt-1">Спробуйте інший пошуковий запит або скиньте фільтр</p>
+            <button onclick="clearSearch()" class="mt-3 px-3 py-1.5 bg-cinnamon text-white text-xs font-bold rounded-xl shadow-sm">
+              Скинути пошук
+            </button>
+          </div>
+        `;
+      }
+    }
+
+    // PAGE 2: HOME (🏠)
+    function renderHomeTab() {
+      let filteredCafes = cafes;
+
+      if (filterCategory !== 'all') {
+        filteredCafes = filteredCafes.filter(c => c.category === filterCategory);
+      }
+
+      const q = searchQuery.trim().toLowerCase();
+      if (q.length > 0) {
+        filteredCafes = filteredCafes.filter(c => 
+          c.name.toLowerCase().includes(q) || 
+          c.address.toLowerCase().includes(q) ||
+          c.discount.toLowerCase().includes(q)
+        );
+      }
+
+      return `
+        <div class="space-y-3 pt-1">
+          <!-- Location Header & Action Buttons -->
+          <div class="flex justify-between items-center">
+            <div class="flex items-center gap-2">
+              <div class="w-8 h-8 rounded-xl bg-cinnamon text-cream font-heading font-black text-lg flex items-center justify-center shadow-sm">
+                C
+              </div>
+              <div>
+                <h2 class="text-base font-extrabold font-heading text-espresso leading-tight">Куди б піти</h2>
+                <div class="flex items-center gap-1 text-[10px] text-espresso/70 font-semibold">
+                  <i class="fa-solid fa-location-dot text-cinnamon"></i>
+                  <span>ДТЕУ Кампус, Київ</span>
+                </div>
+              </div>
+            </div>
+
+            <div class="flex items-center gap-2">
+              <button onclick="openModal('qrModal')" title="Показати QR-код" class="w-9 h-9 rounded-xl bg-latte border border-borderCream text-espresso flex items-center justify-center hover:bg-cinnamon hover:text-white transition shadow-sm">
+                <i class="fa-solid fa-qrcode text-base"></i>
+              </button>
+              <button onclick="openModal('nfcModal')" title="NFC Оплата" class="w-9 h-9 rounded-xl bg-cinnamon text-white flex items-center justify-center hover:bg-cinnamonHover transition shadow-md">
+                <i class="fa-solid fa-mobile-screen-button text-base"></i>
+              </button>
+            </div>
+          </div>
+
+          <!-- Live Search Input -->
+          <div class="flex items-center gap-2">
+            <div class="flex-1 bg-white border border-borderCream rounded-xl px-3 py-2 flex items-center gap-2 shadow-sm focus-within:border-cinnamon transition">
+              <i class="fa-solid fa-magnifying-glass text-espresso/40 text-xs"></i>
+              <input type="text" id="searchInput" oninput="handleSearch(this.value)" value="${searchQuery}" placeholder="Знайти заклади" class="w-full text-xs text-espresso bg-transparent focus:outline-none font-semibold">
+              <button id="searchClearBtn" onclick="clearSearch()" class="${searchQuery.trim().length > 0 ? '' : 'hidden'} text-espresso/40 hover:text-cinnamon text-xs focus:outline-none">
+                <i class="fa-solid fa-xmark"></i>
+              </button>
+            </div>
+            <button onclick="showToast('Мапа кампусу', 'Завантаження мапи кав\'ярень навколо ДТЕУ')" class="px-3 py-2 bg-latte border border-borderCream text-espresso font-bold text-xs rounded-xl flex items-center gap-1 shrink-0">
+              <i class="fa-solid fa-map-location-dot text-cinnamon"></i>
+              <span>Мапа</span>
+            </button>
+          </div>
+
+          <!-- Category Filter Tags -->
+          <div class="flex items-center gap-1.5 overflow-x-auto custom-scroll pb-1">
+            <button onclick="setFilter('all')" class="px-3 py-1.5 rounded-xl text-xs font-bold transition shrink-0 ${filterCategory==='all' ? 'bg-espresso text-white' : 'bg-white text-espresso border border-borderCream'}">
+              Всі
+            </button>
+            <button onclick="setFilter('study')" class="px-3 py-1.5 rounded-xl text-xs font-bold transition shrink-0 ${filterCategory==='study' ? 'bg-espresso text-white' : 'bg-white text-espresso border border-borderCream'}">
+              💻 Навчання
+            </button>
+            <button onclick="setFilter('near')" class="px-3 py-1.5 rounded-xl text-xs font-bold transition shrink-0 ${filterCategory==='near' ? 'bg-espresso text-white' : 'bg-white text-espresso border border-borderCream'}">
+              📍 Поруч
+            </button>
+            <button onclick="setFilter('open')" class="px-3 py-1.5 rounded-xl text-xs font-bold transition shrink-0 ${filterCategory==='open' ? 'bg-espresso text-white' : 'bg-white text-espresso border border-borderCream'}">
+              🟢 Відчинені
+            </button>
+          </div>
+
+          <div id="cafeFeedContainer" class="space-y-3">
+            ${renderCafeListHtml(filteredCafes)}
+          </div>
+        </div>
+      `;
+    }
+
+    // PAGE 3: CARD (💳) - NO COFFEE PASS SECTION
+    function renderCardTab() {
+      const activeOrdersHtml = activeOrders.map(o => `
+        <div class="bg-emerald-50 p-2.5 rounded-xl border border-emerald-300 flex justify-between items-center shadow-sm">
+          <div>
+            <span class="text-[9px] bg-emerald-700 text-white font-bold px-1.5 py-0.5 rounded uppercase">Забирай: ${o.time}</span>
+            <p class="text-xs font-bold text-espresso mt-1">${o.cafe}</p>
+            <p class="text-[10px] text-espresso/60">${o.items}</p>
+          </div>
+          <button onclick="openModal('qrModal')" class="px-2.5 py-1 bg-espresso text-cream text-[10px] font-bold rounded-lg shadow">
+            Показати QR
+          </button>
+        </div>
+      `).join('');
+
+      return `
+        <div class="space-y-3.5 pt-1">
+          <div class="flex justify-between items-center">
+            <h2 class="text-xl font-extrabold font-heading text-espresso">Картка & Баланс</h2>
+            <span class="text-[10px] bg-emerald-100 text-emerald-800 font-bold px-2 py-0.5 rounded-full">
+              ● Картка активна
+            </span>
+          </div>
+
+          <!-- VIRTUAL CARD -->
+          <div class="w-full h-44 rounded-2xl bg-gradient-to-tr from-espresso via-espressoDark to-cinnamon p-4 text-white shadow-xl border border-cinnamon/40 flex flex-col justify-between relative overflow-hidden">
+            <div class="absolute -right-8 -bottom-8 w-36 h-36 rounded-full border-4 border-cinnamon/20"></div>
+
+            <div class="flex justify-between items-center z-10">
+              <div class="flex items-center gap-2">
+                <div class="w-8 h-8 bg-cream rounded-lg text-espresso font-heading font-black text-lg flex items-center justify-center shadow">
+                  C
+                </div>
+                <span class="font-heading font-extrabold text-sm tracking-wider text-cream">Crispee</span>
+              </div>
+              <i class="fa-solid fa-wifi text-cinnamon text-sm"></i>
+            </div>
+
+            <div class="my-auto z-10 pt-2">
+              <p class="font-mono text-base font-bold tracking-widest text-cream">4532 •••• •••• 8910</p>
+            </div>
+
+            <div class="flex justify-between items-end text-[10px] text-cream/80 font-semibold z-10">
+              <div>
+                <p class="text-[8px] uppercase tracking-wider text-cream/50">Держатель картки</p>
+                <p class="font-bold text-white uppercase text-[11px]">ВЛАДИСЛАВ ФОРНОЛЯК</p>
+              </div>
+            </div>
+          </div>
+
+          <!-- Main Balance Display -->
+          <div class="bg-white p-3 rounded-2xl border border-borderCream shadow-sm flex justify-between items-center">
+            <div>
+              <p class="text-[10px] text-espresso/60 font-bold uppercase">Основний баланс</p>
+              <h3 class="text-2xl font-extrabold text-espresso font-heading">${userBalance.toFixed(2)} ₴</h3>
+            </div>
+            <div class="text-right">
+              <p class="text-[10px] text-espresso/60 font-bold uppercase">Бонуси Crispee</p>
+              <h4 class="text-base font-extrabold text-cinnamon">${userBonuses} ⚡️</h4>
+            </div>
+          </div>
+
+          <!-- ACTIVE TAKEAWAY ORDERS WIDGET -->
+          ${activeOrders.length > 0 ? `
+            <div>
+              <h4 class="text-xs font-bold text-espresso/70 uppercase tracking-wider mb-1.5">⏱ Активне передзамовлення:</h4>
+              <div class="space-y-1.5">${activeOrdersHtml}</div>
+            </div>
+          ` : ''}
+
+          <!-- Quick Action Buttons -->
+          <div class="grid grid-cols-3 gap-2">
+            <button onclick="topUpBalance()" class="p-2.5 bg-latte border border-borderCream rounded-xl text-center hover:bg-cinnamon hover:text-white transition group">
+              <i class="fa-solid fa-plus text-cinnamon group-hover:text-white text-sm block mb-1"></i>
+              <span class="text-[11px] font-bold">Поповнити</span>
+            </button>
+            <button onclick="openModal('splitModal')" class="p-2.5 bg-latte border border-borderCream rounded-xl text-center hover:bg-cinnamon hover:text-white transition group">
+              <i class="fa-solid fa-users-viewfinder text-cinnamon group-hover:text-white text-sm block mb-1"></i>
+              <span class="text-[11px] font-bold">Спліт чека</span>
+            </button>
+            <button onclick="showToast('Історія виписок', 'Експорт PDF-виписки на e-mail')" class="p-2.5 bg-latte border border-borderCream rounded-xl text-center hover:bg-cinnamon hover:text-white transition group">
+              <i class="fa-solid fa-receipt text-cinnamon group-hover:text-white text-sm block mb-1"></i>
+              <span class="text-[11px] font-bold">Виписка</span>
+            </button>
+          </div>
+
+          <!-- Recent Transactions -->
+          <div>
+            <h4 class="text-xs font-bold text-espresso/70 uppercase tracking-wider mb-2">Останні транзакції:</h4>
+            <div class="space-y-2">
+              <div class="bg-white p-2.5 rounded-xl border border-borderCream flex justify-between items-center shadow-sm">
+                <div class="flex items-center gap-2.5">
+                  <div class="w-7 h-7 rounded-lg bg-espresso/10 text-espresso flex items-center justify-center font-bold text-xs">🥐</div>
+                  <div>
+                    <p class="text-xs font-bold text-espresso">Львівські Круасани</p>
+                    <p class="text-[10px] text-espresso/60">Капучино та круасан</p>
+                  </div>
+                </div>
+                <span class="text-xs font-bold text-espresso">-85.00 ₴</span>
+              </div>
+
+              <div class="bg-white p-2.5 rounded-xl border border-borderCream flex justify-between items-center shadow-sm">
+                <div class="flex items-center gap-2.5">
+                  <div class="w-7 h-7 rounded-lg bg-emerald-100 text-emerald-800 flex items-center justify-center font-bold text-xs">💳</div>
+                  <div>
+                    <p class="text-xs font-bold text-espresso">Поповнення EasyPay</p>
+                    <p class="text-[10px] text-espresso/60">Термінал у корпусі №1</p>
+                  </div>
+                </div>
+                <span class="text-xs font-bold text-emerald-700">+300.00 ₴</span>
+              </div>
+            </div>
+          </div>
+        </div>
+      `;
+    }
+
+    // ACTIONS & MODALS LOGIC
+
+    function setFilter(cat) {
+      filterCategory = cat;
+      renderScreen();
+    }
+
+    function openModal(id) {
+      document.getElementById(id).classList.remove('hidden');
+    }
+
+    function closeModal(id) {
+      document.getElementById(id).classList.add('hidden');
+    }
+
+    function copyRefLink() {
+      const link = "crispee.app/r/vlad2026";
+      const tempInput = document.createElement("input");
+      tempInput.value = link;
+      document.body.appendChild(tempInput);
+      tempInput.select();
+      document.execCommand("copy");
+      document.body.removeChild(tempInput);
+      showToast("Реферальне посилання", "Скопійовано! Надішліть друзям.");
+    }
+
+    function spinWheel() {
+      if (isSpinning) return;
+      isSpinning = true;
+
+      const prizeIdx = Math.floor(Math.random() * wheelPrizes.length);
+      const selectedPrize = wheelPrizes[prizeIdx];
+
+      const degreesPerSlice = 360 / wheelPrizes.length;
+      const targetDegree = 1800 + (prizeIdx * degreesPerSlice) + (degreesPerSlice / 2);
+      wheelRotation += targetDegree;
+
+      const wheelGraphic = document.getElementById('wheelGraphic');
+      if (wheelGraphic) {
+        wheelGraphic.style.transform = `rotate(${wheelRotation}deg)`;
+      }
+
+      setTimeout(() => {
+        isSpinning = false;
+        closeModal('wheelModal');
+        document.getElementById('prizeTitle').textContent = selectedPrize.name;
+        document.getElementById('prizeCode').textContent = selectedPrize.code;
+        openModal('prizeModal');
+      }, 4100);
+    }
+
+    function claimPrize() {
+      closeModal('prizeModal');
+      showToast("Виграш збережено!", "Промокод успішно додано у ваш кабінет!");
+      renderScreen();
+    }
+
+    function simulateNfcSuccess() {
+      closeModal('nfcModal');
+      userBalance -= 65.00;
+      userBonuses += 15;
+      userXP += 25;
+      showToast("Оплата успішна!", "Списано 65.00 ₴ через SoftPOS. Нараховано +15 ⚡️ та +25 XP!");
+      renderScreen();
+    }
+
+    function topUpBalance() {
+      userBalance += 200.00;
+      showToast("Баланс поповнено!", "Нараховано +200.00 ₴ на Crispee Card.");
+      renderScreen();
+    }
+
+    function calculateSplit() {
+      const amount = parseFloat(document.getElementById('splitAmount').value) || 0;
+      const checkboxes = document.querySelectorAll('.friend-check');
+      const shares = document.querySelectorAll('.friend-share');
+      
+      let checkedCount = 0;
+      checkboxes.forEach(c => { if(c.checked) checkedCount++; });
+
+      const perPerson = checkedCount > 0 ? (amount / (checkedCount + 1)).toFixed(0) : 0;
+
+      checkboxes.forEach((cb, idx) => {
+        shares[idx].textContent = cb.checked ? `${perPerson} ₴` : '0 ₴';
+      });
+    }
+
+    function sendSplitRequest() {
+      closeModal('splitModal');
+      userXP += 30;
+      showToast("P2P Спліт чека", "Запити на оплату успішно надіслано Софії та Максиму! (+30 XP)");
+      renderScreen();
+    }
+
+    // TAKE AWAY LOGIC
+    function openTakeawayModal(cafeId) {
+      selectedCafeForTakeaway = cafes.find(c => c.id === cafeId) || cafes[0];
+      document.getElementById('takeawayCafeTitle').textContent = selectedCafeForTakeaway.name;
+
+      const container = document.getElementById('takeawayMenuContainer');
+      container.innerHTML = selectedCafeForTakeaway.menu.map((item, i) => `
+        <label class="flex items-center justify-between p-2.5 bg-white rounded-xl border border-borderCream cursor-pointer hover:border-cinnamon">
+          <div class="flex items-center gap-2.5">
+            <input type="checkbox" ${i===0?'checked':''} onchange="recalculateTakeawayTotal()" class="takeaway-item-check w-4 h-4 accent-cinnamon rounded" data-price="${item.price}" data-name="${item.name}">
+            <span class="text-xs font-semibold text-espresso">${item.name}</span>
+          </div>
+          <span class="text-xs font-bold text-cinnamon">${item.price} ₴</span>
+        </label>
+      `).join('');
+
+      recalculateTakeawayTotal();
+      openModal('takeawayModal');
+    }
+
+    function recalculateTakeawayTotal() {
+      const checks = document.querySelectorAll('.takeaway-item-check');
+      let total = 0;
+      checks.forEach(c => {
+        if (c.checked) total += parseFloat(c.getAttribute('data-price')) || 0;
+      });
+      document.getElementById('takeawayTotalText').textContent = `${total} ₴`;
+    }
+
+    function confirmTakeawayOrder() {
+      const checks = document.querySelectorAll('.takeaway-item-check');
+      let itemsList = [];
+      let total = 0;
+      checks.forEach(c => {
+        if (c.checked) {
+          itemsList.push(c.getAttribute('data-name'));
+          total += parseFloat(c.getAttribute('data-price')) || 0;
+        }
+      });
+
+      if (itemsList.length === 0) {
+        showToast("Помилка", "Будь ласка, оберіть хоча б один напій чи страву");
+        return;
+      }
+
+      if (userBalance < total) {
+        showToast("Недостатньо коштів", "Поповніть баланс вашої картки Crispee");
+        return;
+      }
+
+      const pickupTime = document.getElementById('pickupTimeSelect').value;
+
+      userBalance -= total;
+      userXP += 40;
+      activeOrders.unshift({
+        id: 'ORD-' + Math.floor(Math.random()*900 + 100),
+        cafe: selectedCafeForTakeaway.name,
+        items: itemsList.join(', '),
+        time: pickupTime
+      });
+
+      closeModal('takeawayModal');
+      showToast("Передзамовлення прийнято!", `Приготують: ${pickupTime}. Покажіть QR на касі! (+40 XP)`);
+      renderScreen();
+    }
+
+    // FUNCTIONAL ACHIEVEMENTS TOAST DETAILS
+    function showAchievementDetails(type) {
+      if (type === 'owl') {
+        showToast("🦉 «Ранкова сова»", "Умова: Замовити каву до 08:30 ранку 5 разів. Виконалася: 3/5. Нагорода: Безкоштовний круасан!");
+      } else if (type === 'croissant') {
+        showToast("🥐 «Круасан-монстр»", "Виконано! Нараховано +50 ⚡️ бонусів за візити у 3 різні пекарні.");
+      } else if (type === 'company') {
+        showToast("🤝 «Душа компанії»", "Умова: Розподілити 5 чеків через P2P Split Bill. Прогрес: 2/5. Нагорода: +100 XP.");
+      }
+    }
+
+    let qrTimeLeft = 45;
+    function updateQrTimer() {
+      qrTimeLeft--;
+      if (qrTimeLeft <= 0) qrTimeLeft = 45;
+      const el = document.getElementById('qrTimer');
+      if (el) el.textContent = qrTimeLeft;
+    }
+
+    function showToast(title, msg) {
+      const toast = document.getElementById('toast');
+      document.getElementById('toastTitle').textContent = title;
+      document.getElementById('toastMsg').textContent = msg;
+      
+      toast.classList.remove('translate-y-24', 'opacity-0');
+      setTimeout(() => {
+        toast.classList.add('translate-y-24', 'opacity-0');
+      }, 3500);
+    }
+  </script>
+</body>
+</html>
